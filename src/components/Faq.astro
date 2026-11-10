@@ -1,0 +1,81 @@
+---
+// Häufige Fragen – helle Section, bleibt beim Scrollen stehen, der Footer schiebt sich darüber.
+import { faq } from '../data/site';
+---
+
+<!-- data-sticky-reveal: Section bleibt stehen, der Footer schiebt sich darüber (siehe effects.ts) -->
+<section class="faq" id="faq" data-sticky-reveal>
+  <div class="container faq-inner">
+    <header class="faq-head">
+      <p class="eyebrow">(05) Häufige Fragen</p>
+      <h2 class="faq-title" data-split>Gut zu wissen.</h2>
+      <p class="faq-lead reveal">
+        Die wichtigsten Antworten rund um Video, Social Media, Branding, Webdesign und KI-Automatisierung mit Mediawo.
+        Ihre Frage ist nicht dabei?
+      </p>
+      <a href="/kontakt" class="faq-btn reveal">Kontakt aufnehmen <span aria-hidden="true">→</span></a>
+    </header>
+
+    <ul class="faq-list">
+      {faq.map((f, i) => (
+        <li class="faq-item reveal" style={`transition-delay:${i * 60}ms`}>
+          <details name="faq">
+            <summary>
+              <h3>{f.q}</h3>
+              <span class="faq-icon" aria-hidden="true"></span>
+            </summary>
+            <p>{f.a}</p>
+          </details>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .faq {
+    --faq-bg: #f4f1ec; --faq-fg: var(--c-ink); --faq-muted: #6a6670; --faq-line: rgba(11, 11, 16, 0.14);
+    background: var(--faq-bg); color: var(--faq-fg);
+    padding-block: var(--section-space);
+  }
+  .faq-inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: clamp(40px, 7vw, 120px); align-items: start; }
+  .faq-head { display: grid; gap: 24px; position: sticky; top: 120px; }
+  .faq .eyebrow { color: var(--faq-muted); }
+  .faq-title { font-size: clamp(1.9rem, 3.8vw, 3.6rem); }
+  .faq-lead { color: var(--faq-muted); font-weight: 300; line-height: 1.7; max-width: 36ch; }
+  .faq-btn {
+    position: relative; overflow: hidden; isolation: isolate; width: fit-content;
+    display: inline-flex; align-items: center; gap: 12px; padding: 16px 30px; border-radius: 99px;
+    background: var(--c-ink); color: var(--c-white); font-size: 0.9375rem; font-weight: 600;
+  }
+  .faq-btn::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--c-red); transform: translateY(101%); transition: transform 0.4s var(--ease); }
+  .faq-btn:hover::before { transform: none; }
+  .faq-btn span { transition: transform 0.4s var(--ease); }
+  .faq-btn:hover span { transform: translateX(4px); }
+
+  .faq-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--faq-line); }
+  .faq-item { border-bottom: 1px solid var(--faq-line); }
+  summary {
+    display: flex; justify-content: space-between; align-items: center; gap: 24px;
+    padding-block: clamp(22px, 2.6vw, 32px); cursor: pointer; list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary h3 { font-size: clamp(1.05rem, 1.5vw, 1.3rem); font-weight: 600; line-height: 1.35; transition: color 0.25s; }
+  summary:hover h3, details[open] summary h3 { color: var(--c-red); }
+  .faq-icon { position: relative; flex: none; width: 22px; height: 22px; }
+  .faq-icon::before, .faq-icon::after {
+    content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1.5px; background: currentColor;
+    transition: transform 0.4s var(--ease);
+  }
+  .faq-icon::after { transform: rotate(90deg); }
+  details[open] .faq-icon::after { transform: rotate(0deg); }
+  details p { padding-bottom: clamp(22px, 2.6vw, 32px); padding-right: 48px; max-width: 62ch; font-weight: 300; line-height: 1.8; color: #3b3842; }
+  details[open] p { animation: faq-open 0.5s var(--ease); }
+  @keyframes faq-open { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 860px) {
+    .faq-inner { grid-template-columns: 1fr; }
+    .faq-head { position: static; }
+    details p { padding-right: 0; }
+  }
+</style>

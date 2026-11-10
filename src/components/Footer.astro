@@ -1,0 +1,129 @@
+---
+import { nav, site, navHref } from '../data/site';
+import Logo from './Logo.astro';
+import ContactForm from './ContactForm.astro';
+import RlpMap from './RlpMap.astro';
+const year = new Date().getFullYear();
+// Auf der Kontaktseite steht das Formular bereits im Inhalt → hier ausblenden
+const isContactPage = Astro.url.pathname.replace(/\/$/, '').endsWith('/kontakt');
+---
+
+<footer class:list={["footer", { "is-slim": isContactPage }]} id="kontakt">
+  <div class="footer-glow" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  {!isContactPage && (
+    <div class="container footer-cta">
+      <p class="eyebrow reveal">Sie planen ein Projekt?</p>
+      <a class="footer-big" href="/kontakt">
+        <span class="footer-big-text" data-split>Sprechen Sie uns an</span>
+        <span class="footer-arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  )}
+
+  {!isContactPage && (
+    <div class="container footer-contact-grid">
+      <div class="footer-form reveal">
+        <ContactForm id="footer" compact />
+      </div>
+      <aside class="footer-where">
+        <RlpMap />
+        <div class="footer-contact reveal">
+          <a class="footer-mail" href={`mailto:${site.email}`}>{site.email}</a>
+          <a class="footer-phone" href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a>
+          <p class="footer-address">{site.address.join(', ')}</p>
+        </div>
+      </aside>
+    </div>
+  )}
+
+  <div class="container footer-top">
+    <div class="footer-cols reveal">
+      <div>
+        <p class="footer-head">Seiten</p>
+        <ul>{nav.map((n) => <li><a href={navHref(n.href, Astro.url.pathname)}>{n.label}</a></li>)}</ul>
+      </div>
+      <div>
+        <p class="footer-head">Social</p>
+        <ul>{site.socials.map((s) => <li><a href={s.href}>{s.name}</a></li>)}</ul>
+      </div>
+      <div>
+        <p class="footer-head">Adresse</p>
+        <ul>{site.address.map((l) => <li>{l}</li>)}</ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-wordmark container reveal" aria-hidden="true"><Logo /></div>
+
+  <div class="container footer-bottom">
+    <span>© {year} {site.name}</span>
+    <span class="footer-legal">
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+    </span>
+  </div>
+</footer>
+
+<style>
+  .footer { position: relative; z-index: 1; isolation: isolate; background: var(--c-black); padding-top: var(--section-space); overflow: hidden; }
+  .footer-glow {
+    position: absolute; z-index: -1; left: 50%; bottom: -35%; width: 120vw; height: 90%; translate: -50% 0;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(232, 67, 68, 0.5), rgba(166, 22, 18, 0.2) 50%, transparent 72%);
+    filter: blur(30px); pointer-events: none;
+    animation: breathe 9s ease-in-out infinite alternate;
+  }
+  @keyframes breathe { from { opacity: 0.7; scale: 0.95; } to { opacity: 1; scale: 1.05; } }
+  .footer .grain { z-index: -1; }
+  .footer.is-slim { padding-top: clamp(64px, 8vw, 120px); }
+
+  /* Footer darf fett sein */
+  .footer-cta { display: grid; gap: 24px; margin-bottom: clamp(80px, 10vw, 160px); }
+  .footer-big { display: inline-flex; align-items: baseline; gap: 0.25em; width: fit-content; }
+  .footer-big-text {
+    font-family: var(--font-display); font-weight: 800; text-transform: uppercase;
+    font-size: clamp(2.4rem, 6.4vw, 7rem); line-height: 1; letter-spacing: -0.02em; text-wrap: balance;
+  }
+  .footer-arrow {
+    font-family: var(--font-display); font-weight: 300; color: var(--c-red);
+    font-size: clamp(2.5rem, 8vw, 8rem); line-height: 1; transition: transform 0.6s var(--ease);
+  }
+  .footer-big:hover .footer-arrow { transform: translateX(0.2em) rotate(-45deg); }
+
+  .footer-contact-grid {
+    display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(48px, 8vw, 140px); align-items: start;
+    padding-bottom: clamp(80px, 10vw, 160px); margin-bottom: clamp(64px, 8vw, 120px); border-bottom: 1px solid var(--c-line);
+  }
+  .footer-where { display: grid; gap: 36px; justify-items: start; }
+  .footer-address { color: var(--c-muted); font-weight: 300; font-size: 0.9375rem; }
+  @media (max-width: 900px) { .footer-contact-grid { grid-template-columns: 1fr; } }
+
+  .footer-top { display: flex; justify-content: flex-end; gap: 64px; flex-wrap: wrap; }
+  .footer-contact { display: flex; flex-direction: column; gap: 10px; }
+  .footer-mail {
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem); font-weight: 400; width: fit-content;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size 0.5s var(--ease), color 0.25s;
+  }
+  .footer-mail:hover { background-size: 100% 1px; color: var(--c-red); }
+  .footer-phone { color: var(--c-muted); font-weight: 300; }
+  .footer-cols { display: flex; gap: clamp(40px, 7vw, 120px); flex-wrap: wrap; }
+  .footer-head { font-family: var(--font-display); font-weight: 700; margin-bottom: 20px; }
+  .footer-cols ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; color: var(--c-muted); font-size: 0.9375rem; font-weight: 300; }
+  .footer-cols a { transition: color 0.2s; }
+  .footer-cols a:hover { color: var(--c-red); }
+
+  /* Logo im Footer in Rot */
+  .footer-wordmark {
+    margin-top: clamp(80px, 10vw, 160px); padding-bottom: clamp(24px, 3vw, 48px);
+    color: var(--c-red); font-size: calc((100vw - 2 * var(--gutter)) * 254 / 1935);
+  }
+  .footer-bottom {
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    padding-block: 24px; font-size: 0.8125rem; color: var(--c-muted); font-weight: 300;
+    border-top: 1px solid var(--c-line);
+  }
+  .footer-legal { display: flex; gap: 24px; }
+  .footer-legal a:hover { color: var(--c-red); }
+</style>

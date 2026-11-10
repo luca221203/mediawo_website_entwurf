@@ -1,0 +1,91 @@
+---
+import { services } from '../data/site';
+---
+
+<section class="services container" id="leistungen">
+  <header class="section-head">
+    <p class="eyebrow reveal">(01) Leistungen</p>
+    <h2 class="section-title" data-split>Alles für Ihren Auftritt – <span>aus einer Hand.</span></h2>
+  </header>
+
+  <ol class="service-list">
+    {services.map((s, i) => (
+      <li class="service reveal" style={`transition-delay:${i * 70}ms`}>
+        <span class="service-fill" aria-hidden="true"></span>
+        <details name="service">
+          <summary>
+            <span class="service-num">0{i + 1}</span>
+            <span class="service-title">{s.title}</span>
+            <span class="service-plus" aria-hidden="true"></span>
+          </summary>
+          <div class="service-body">
+            <p>{s.text}</p>
+            <ul class="service-tags">{s.tags.map((t) => <li>{t}</li>)}</ul>
+          </div>
+        </details>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .services { padding-block: var(--section-space); }
+  .section-head { display: grid; gap: 24px; margin-bottom: clamp(64px, 9vw, 140px); }
+  .section-title { font-size: clamp(1.8rem, 3.6vw, 3.5rem); max-width: 20ch; }
+  .section-title span { color: var(--c-muted); }
+
+  .service-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--c-line); }
+  .service { position: relative; isolation: isolate; border-bottom: 1px solid var(--c-line); }
+
+  /* Rote Fläche: fährt beim Hover von unten herein und beim Verlassen nach unten heraus */
+  .service-fill {
+    position: absolute; inset: -1px 0 0; z-index: -1; background: var(--c-red);
+    transform: scaleY(0); transform-origin: bottom;
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1); /* startet sofort, läuft weich aus */
+  }
+  .service:hover .service-fill,
+  .service:has(details[open]) .service-fill { transform: scaleY(1); }
+
+  summary {
+    display: grid; grid-template-columns: 4rem 1fr auto; align-items: center; gap: 16px;
+    padding: clamp(24px, 3vw, 44px) clamp(16px, 2vw, 32px); cursor: pointer; list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  .service-num { color: var(--c-muted); font-size: 0.875rem; font-variant-numeric: tabular-nums; transition: color 0.4s; }
+  .service-title {
+    font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1.1;
+    font-size: clamp(1.9rem, 4.6vw, 4.4rem);
+    transition: transform 0.6s var(--ease);
+  }
+  .service:hover .service-title { transform: translateX(0.12em); }
+  .service:hover .service-num, .service:has(details[open]) .service-num { color: rgba(255, 255, 255, 0.85); }
+
+  .service-plus { position: relative; width: 24px; height: 24px; }
+  .service-plus::before, .service-plus::after {
+    content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1px; background: currentColor;
+    transition: transform 0.5s var(--ease);
+  }
+  .service-plus::after { transform: rotate(90deg); }
+  details[open] .service-plus::after { transform: rotate(0deg); }
+
+  .service-body {
+    display: grid; grid-template-columns: 4rem minmax(0, 46ch) 1fr; gap: 16px;
+    padding: 0 clamp(16px, 2vw, 32px) clamp(32px, 4vw, 56px);
+  }
+  details[open] .service-body { animation: open 0.7s var(--ease); }
+  @keyframes open { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+  .service-body p { grid-column: 2; font-size: 1rem; font-weight: 300; line-height: 1.7; }
+  .service-tags { grid-column: 3; justify-self: end; align-self: start; list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+  .service-tags li { border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 99px; padding: 6px 14px; font-size: 0.8125rem; font-weight: 300; }
+
+  @media (max-width: 760px) {
+    summary { grid-template-columns: 2rem minmax(0, 1fr) auto; gap: 12px; }
+    .service-title { font-size: clamp(1.1rem, 5.6vw, 2.4rem); hyphens: manual; }
+    .service-body { grid-template-columns: 2rem 1fr; }
+    .service-tags { grid-column: 2; justify-self: start; justify-content: flex-start; }
+  }
+  @media (hover: none) {
+    .service:hover .service-fill { transform: scaleY(0); }
+    .service:has(details[open]) .service-fill { transform: scaleY(1); }
+  }
+</style>

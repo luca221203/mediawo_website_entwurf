@@ -1,0 +1,147 @@
+/* ─────────────────────────────────────────────────────────────
+   BRAND-TOKENS – aus Figma (MW_CI)
+   Farben/Verläufe nur hier ändern.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* Brand-Farben */
+  --c-red: #e84344;         /* Mediawo Rot – Hauptfarbe */
+  --c-amber: #e8ab43;       /* Bernstein – Verlauf */
+  --c-lavender: #868cff;    /* Lavendel – Verlauf */
+  --c-darkred: #a61612;     /* Dunkelrot */
+  --c-navy: #0f1021;        /* Nachtblau – dunkler Hintergrund */
+  --c-black: #0d0d11;
+  --c-white: #ffffff;
+
+  /* Rollen */
+  --c-orange: #ff6a2b;      /* Orange – nur für Glows/Verläufe */
+  --c-ink: #0b0b10;         /* sehr dunkler Grund */
+
+  --c-bg: var(--c-ink);
+  --c-fg: var(--c-white);
+  --c-muted: #8d8e9f;
+  --c-line: rgba(255, 255, 255, 0.1);
+  --c-accent: var(--c-red);
+  --c-accent-2: var(--c-amber);
+  --c-light: var(--c-white);
+  --c-on-light: var(--c-navy);
+
+  /* Verläufe / Glows */
+  --gradient-brand: linear-gradient(120deg, var(--c-red) 0%, var(--c-lavender) 48%, var(--c-amber) 100%);
+  --gradient-warm: linear-gradient(120deg, var(--c-red) 0%, var(--c-darkred) 100%);
+  --glow: radial-gradient(closest-side, rgba(232, 67, 68, 0.6), rgba(166, 22, 18, 0.25) 55%, transparent);
+
+  /* Eine Schriftfamilie für alles: Poppins (lokal eingebunden, DSGVO-freundlich).
+     Headlines: Poppins Bold/ExtraBold in Großbuchstaben · Fließtext: Poppins Light/Regular */
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-body: 'Poppins', system-ui, sans-serif;
+
+  --gutter: clamp(20px, 4.5vw, 72px);
+  --section-space: clamp(120px, 15vw, 240px);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; overflow-x: clip; }
+
+body {
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-fg);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip; /* clip statt hidden: verhindert seitliches Scrollen, ohne Sticky zu brechen */
+}
+
+/* main ohne eigene Box: so teilen sich Sections und Footer einen Container (nötig für den Sticky-Footer-Effekt) */
+main { display: contents; }
+img, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea, select { font: inherit; }
+h1, h2, h3, p { margin: 0; }
+
+/* Headlines: Poppins, fett, Großbuchstaben */
+h1, h2, h3, .display, .headline { font-family: var(--font-display); }
+h1, h2, .headline { font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1.05; }
+
+::selection { background: var(--c-accent); color: var(--c-bg); }
+
+:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; }
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.container { padding-inline: var(--gutter); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* Stufen-Übergang (siehe src/scripts/pixel.ts) */
+.stairs { position: fixed; inset: 0; z-index: 100; display: none; pointer-events: none; }
+.stairs.is-on { display: flex; pointer-events: all; }
+.stairs i { flex: 1; margin-right: -1px; background: var(--c-black); transform: scaleY(0); will-change: transform; }
+
+/* Körnung (Film-Grain) als Overlay: <div class="grain"></div> */
+.grain {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.09; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Split-Text: Wörter gleiten herein */
+/* Maske mit Luft an allen Seiten, damit nichts abgeschnitten wird */
+[data-split] .w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.06em 0.08em 0.14em; margin: -0.06em -0.08em -0.14em; }
+[data-split] .wi { display: inline-block; transform: translateY(105%); transition: transform 0.9s var(--ease); transition-delay: calc(var(--i, 0) * 35ms); }
+[data-split].is-visible .wi { transform: none; }
+
+/* Scroll-Fill: ausgegraut → gefüllt */
+[data-fill] .w { opacity: 0.16; transition: opacity 0.35s ease; }
+[data-fill] .w.on { opacity: 1; }
+
+/* Projekt-Kacheln: 2 × n, bündig, gleichmäßige Abstände */
+.project-grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(48px, 5vw, 80px) clamp(20px, 2.5vw, 40px);
+}
+@media (max-width: 700px) { .project-grid { grid-template-columns: 1fr; } }
+
+/* Umriss-Button */
+.pill {
+  display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--c-line); border-radius: 99px;
+  padding: 16px 30px; font-size: 0.9375rem; transition: border-color 0.3s, color 0.3s, background 0.3s;
+}
+.pill:hover { border-color: var(--c-red); color: var(--c-red); }
+
+/* Section mit data-sticky-reveal (per Skript markiert, siehe effects.ts) */
+.sticky-reveal { position: sticky !important; top: 0; z-index: 0; transform-origin: center top; }
+
+/* Scroll-Reveal */
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  [data-split] .wi { transform: none; transition: none; }
+  [data-fill] .w { opacity: 1; }
+  *, *::before, *::after { animation: none !important; }
+}

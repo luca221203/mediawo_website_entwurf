@@ -1,0 +1,13 @@
+# Netlify: baut die Website automatisch aus diesem Repository.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Testversion nicht bei Google indexieren lassen (vor dem echten Launch entfernen)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"

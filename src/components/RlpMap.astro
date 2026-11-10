@@ -1,0 +1,53 @@
+---
+// Rheinland-Pfalz-Karte mit rotem Punkt auf Trier. Umriss zeichnet sich beim Einblenden selbst.
+import { rlpPath, trier } from '../data/rlp';
+interface Props { class?: string }
+const { class: className = '' } = Astro.props;
+---
+
+<figure class={`rlp reveal ${className}`}>
+  <svg viewBox="4 425 176 216" role="img" aria-labelledby="rlp-title">
+    <title id="rlp-title">Karte von Rheinland-Pfalz – Mediawo sitzt in Trier</title>
+    <defs>
+      <radialGradient id="rlp-glow">
+        <stop offset="0" stop-color="#e84344" stop-opacity="0.55" />
+        <stop offset="1" stop-color="#e84344" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+    <path class="rlp-shape" d={rlpPath} pathLength="1" />
+    <circle cx={trier.x} cy={trier.y} r="30" fill="url(#rlp-glow)" class="rlp-glow" />
+    <circle cx={trier.x} cy={trier.y} r="4" class="rlp-pulse" />
+    <circle cx={trier.x} cy={trier.y} r="3.2" class="rlp-dot" />
+    <line x1={trier.x + 5} y1={trier.y} x2={trier.x + 22} y2={trier.y} class="rlp-line" />
+    <text x={trier.x + 25} y={trier.y + 3} class="rlp-label">Trier</text>
+  </svg>
+  <figcaption>
+    <span>Rheinland-Pfalz</span>
+    <span class="rlp-coords">49,75° N · 6,64° O</span>
+  </figcaption>
+</figure>
+
+<style>
+  .rlp { margin: 0; display: grid; gap: 14px; width: 100%; max-width: 420px; }
+  .rlp svg { width: 100%; height: auto; overflow: visible; }
+  .rlp-shape {
+    fill: rgba(255, 255, 255, 0.04); stroke: rgba(255, 255, 255, 0.55); stroke-width: 0.8; stroke-linejoin: round;
+    stroke-dasharray: 1; stroke-dashoffset: 1;
+    transition: stroke-dashoffset 2.4s var(--ease), fill 1.2s 1.6s;
+  }
+  .rlp.is-visible .rlp-shape { stroke-dashoffset: 0; fill: rgba(255, 255, 255, 0.06); }
+  .rlp-dot { fill: var(--c-red); }
+  .rlp-pulse { fill: none; stroke: var(--c-red); stroke-width: 1; transform-box: fill-box; transform-origin: center; animation: pulse 2.2s ease-out infinite; }
+  @keyframes pulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(4); opacity: 0; } }
+  .rlp-line { stroke: rgba(255, 255, 255, 0.5); stroke-width: 0.6; }
+  .rlp-label { fill: var(--c-white); font-family: var(--font-display); font-weight: 700; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .rlp-glow, .rlp-dot, .rlp-pulse, .rlp-line, .rlp-label { opacity: 0; transition: opacity 0.8s 1.2s; }
+  .rlp.is-visible :is(.rlp-glow, .rlp-dot, .rlp-line, .rlp-label) { opacity: 1; }
+  .rlp.is-visible .rlp-pulse { opacity: 1; }
+  .rlp figcaption { display: flex; justify-content: space-between; gap: 16px; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-muted); }
+  .rlp-coords { font-variant-numeric: tabular-nums; }
+  @media (prefers-reduced-motion: reduce) {
+    .rlp-shape { stroke-dashoffset: 0; transition: none; }
+    .rlp :is(.rlp-glow, .rlp-dot, .rlp-pulse, .rlp-line, .rlp-label) { opacity: 1; transition: none; }
+  }
+</style>

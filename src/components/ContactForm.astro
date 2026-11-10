@@ -1,0 +1,200 @@
+---
+// Kontaktformular – genutzt auf /kontakt und im Footer.
+// Versand: an site.formEndpoint (z. B. Formspree/Web3Forms) oder automatisch über Netlify Forms.
+import { services, site } from '../data/site';
+
+interface Props { id: string; compact?: boolean }
+const { id, compact = false } = Astro.props;
+const f = (name: string) => `${id}-${name}`;
+---
+
+<form
+  class={`cform ${compact ? 'is-compact' : ''}`}
+  name="kontakt"
+  method="POST"
+  data-netlify="true"
+  netlify-honeypot="website"
+  data-endpoint={site.formEndpoint}
+  novalidate
+>
+  <input type="hidden" name="form-name" value="kontakt" />
+  <p class="cform-hp" aria-hidden="true"><label>Nicht ausfüllen <input name="website" tabindex="-1" autocomplete="off" /></label></p>
+
+  <fieldset class="cform-topics">
+    <legend>Worum geht es?</legend>
+    <div class="chips">
+      {services.map((s) => (
+        <label class="chip">
+          <input type="checkbox" name="interesse" value={s.title.replace(/\u00AD/g, '')} />
+          <span>{s.title}</span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <div class="cform-grid">
+    <div class="field">
+      <input id={f('name')} name="name" type="text" autocomplete="name" placeholder=" " required />
+      <label for={f('name')}>Name *</label>
+    </div>
+    <div class="field">
+      <input id={f('email')} name="email" type="email" autocomplete="email" placeholder=" " required />
+      <label for={f('email')}>E-Mail *</label>
+    </div>
+    <div class="field">
+      <input id={f('firma')} name="firma" type="text" autocomplete="organization" placeholder=" " />
+      <label for={f('firma')}>Unternehmen</label>
+    </div>
+    <div class="field">
+      <input id={f('telefon')} name="telefon" type="tel" autocomplete="tel" placeholder=" " />
+      <label for={f('telefon')}>Telefon</label>
+    </div>
+    <div class="field field-wide">
+      <textarea id={f('nachricht')} name="nachricht" rows={compact ? 4 : 6} placeholder=" " required></textarea>
+      <label for={f('nachricht')}>Ihre Nachricht *</label>
+    </div>
+  </div>
+
+  <label class="consent">
+    <input id={f('datenschutz')} type="checkbox" name="datenschutz" required />
+    <span>Ich bin einverstanden, dass meine Angaben zur Bearbeitung der Anfrage gespeichert werden. Mehr in der <a href="/datenschutz">Datenschutzerklärung</a>. *</span>
+  </label>
+
+  <div class="cform-foot">
+    <button type="submit" class="cform-submit">
+      <span class="label">Anfrage senden</span>
+      <span aria-hidden="true">→</span>
+    </button>
+    <p class="cform-status" role="status" aria-live="polite"></p>
+  </div>
+</form>
+
+<style>
+  .cform { display: grid; gap: 32px; }
+  .cform-hp { position: absolute; left: -9999px; }
+
+  .cform-topics { border: 0; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .cform-topics legend { padding: 0; margin-bottom: 14px; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .chip span {
+    display: inline-block; padding: 10px 18px; border-radius: 99px; border: 1px solid var(--c-line);
+    font-size: 0.875rem; cursor: pointer; transition: background 0.25s, border-color 0.25s, color 0.25s;
+  }
+  .chip:hover span { border-color: rgba(255, 255, 255, 0.4); }
+  .chip input:checked + span { background: var(--c-red); border-color: var(--c-red); color: var(--c-white); }
+  .chip input:focus-visible + span { outline: 2px solid var(--c-red); outline-offset: 3px; }
+
+  .cform-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 32px; }
+  .field { position: relative; }
+  .field-wide { grid-column: 1 / -1; }
+  .field input, .field textarea {
+    width: 100%; padding: 26px 0 12px; background: transparent; color: var(--c-fg);
+    border: 0; border-bottom: 1px solid var(--c-line); border-radius: 0; outline: none; resize: vertical;
+    font-size: 1rem; font-weight: 300; transition: border-color 0.3s;
+  }
+  .field label {
+    position: absolute; left: 0; top: 26px; font-size: 1rem; font-weight: 300; color: var(--c-muted);
+    pointer-events: none; transform-origin: left top; transition: transform 0.35s var(--ease), color 0.3s;
+  }
+  /* schwebende Labels */
+  .field :is(input, textarea):focus + label,
+  .field :is(input, textarea):not(:placeholder-shown) + label { transform: translateY(-22px) scale(0.75); }
+  .field :is(input, textarea):focus { border-color: var(--c-white); }
+  .field :is(input, textarea):focus + label { color: var(--c-white); }
+  .field.is-invalid :is(input, textarea) { border-color: var(--c-red); }
+  .field.is-invalid label { color: var(--c-red); }
+
+  .consent { display: flex; gap: 12px; align-items: flex-start; font-size: 0.8125rem; font-weight: 300; line-height: 1.6; color: var(--c-muted); max-width: 60ch; }
+  .consent input { flex: none; width: 18px; height: 18px; margin-top: 2px; accent-color: var(--c-red); }
+  .consent a { color: var(--c-fg); text-decoration: underline; text-underline-offset: 3px; }
+  .consent.is-invalid span { color: var(--c-red); }
+
+  .cform-foot { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .cform-submit {
+    position: relative; overflow: hidden; isolation: isolate; display: inline-flex; align-items: center; gap: 14px;
+    padding: 18px 34px; border-radius: 99px; border: 0; cursor: pointer;
+    background: var(--c-white); color: var(--c-ink); font-size: 0.9375rem; font-weight: 600;
+    transition: color 0.3s;
+  }
+  .cform-submit::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; background: var(--c-red);
+    transform: translateY(101%); transition: transform 0.4s var(--ease);
+  }
+  .cform-submit:hover { color: var(--c-white); }
+  .cform-submit:hover::before { transform: none; }
+  .cform-submit[disabled] { opacity: 0.6; cursor: progress; }
+  .cform-status { font-size: 0.875rem; font-weight: 300; max-width: 46ch; }
+  .cform-status.is-error { color: var(--c-red); }
+  .cform-status.is-ok { color: var(--c-fg); }
+
+  .is-compact .cform-grid { gap: 4px 28px; }
+
+  @media (max-width: 640px) {
+    .cform-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import { site } from '../data/site';
+
+  const forms = document.querySelectorAll<HTMLFormElement>('form.cform');
+  for (const form of forms) {
+    const status = form.querySelector<HTMLElement>('.cform-status')!;
+    const button = form.querySelector<HTMLButtonElement>('.cform-submit')!;
+    const say = (msg: string, kind: 'ok' | 'error' | '') => {
+      status.textContent = msg;
+      status.className = `cform-status ${kind ? 'is-' + kind : ''}`;
+    };
+
+    // Fehlermarkierung entfernen, sobald nachgebessert wird
+    form.addEventListener('input', (e) => {
+      const el = e.target as HTMLElement;
+      el.closest('.field, .consent')?.classList.remove('is-invalid');
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // Pflichtfelder prüfen
+      let firstBad: HTMLElement | null = null;
+      form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[required]').forEach((el) => {
+        const ok = el.type === 'checkbox' ? (el as HTMLInputElement).checked : el.checkValidity() && el.value.trim() !== '';
+        el.closest('.field, .consent')?.classList.toggle('is-invalid', !ok);
+        if (!ok && !firstBad) firstBad = el;
+      });
+      if (firstBad) {
+        (firstBad as HTMLElement).focus();
+        say('Bitte füllen Sie die markierten Felder aus und prüfen Sie das Format Ihrer E-Mail-Adresse.', 'error');
+        return;
+      }
+
+      const data = new FormData(form);
+      const endpoint = form.dataset.endpoint || site.formEndpoint;
+      // Netlify Forms: auf Netlify gehostet wird an die eigene Seite gepostet
+      const onNetlify = /netlify\.app$/.test(location.hostname);
+      const target = endpoint || (onNetlify ? '/' : '');
+
+      if (!target) {
+        say(`Das Formular ist noch nicht mit einem Postfach verbunden. Bitte schreiben Sie uns vorerst an ${site.email}.`, 'error');
+        return;
+      }
+
+      button.disabled = true;
+      say('Wird gesendet …', '');
+      try {
+        const res = await fetch(target, {
+          method: 'POST',
+          headers: { Accept: 'application/json', ...(onNetlify && !endpoint ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) },
+          body: onNetlify && !endpoint ? new URLSearchParams(data as unknown as Record<string, string>).toString() : data,
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        say('Vielen Dank für Ihre Anfrage. Wir melden uns innerhalb von zwei Werktagen bei Ihnen.', 'ok');
+      } catch {
+        say(`Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut oder schreiben Sie uns an ${site.email}.`, 'error');
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>

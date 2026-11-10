@@ -1,0 +1,141 @@
+---
+import Logo from './Logo.astro';
+import { nav, navHref } from '../data/site';
+---
+
+<a class="skip" href="#inhalt">Zum Inhalt springen</a>
+
+<header class="header">
+  <a href={navHref("/", Astro.url.pathname)} class="header-logo" aria-label="Mediawo – Startseite"><Logo /></a>
+  <button class="menu-btn" aria-expanded="false" aria-controls="menu" aria-label="Menü öffnen" type="button">
+    <i></i><i></i>
+  </button>
+</header>
+
+<div id="menu" class="menu" hidden>
+  <div class="menu-inner container">
+    <div class="menu-left">
+      <!-- bewusst leer – hier kann später z. B. Kontakt/Socials hin -->
+    </div>
+    <nav class="menu-nav" aria-label="Menü">
+      {nav.map((item) => <a href={navHref(item.href, Astro.url.pathname)}>{item.label}</a>)}
+    </nav>
+  </div>
+  <div class="menu-foot container">
+    <a href="/impressum">Impressum</a>
+    <a href="/datenschutz">Datenschutz</a>
+  </div>
+</div>
+
+<style>
+  .skip {
+    position: absolute; left: var(--gutter); top: -100px; z-index: 200;
+    background: var(--c-white); color: var(--c-navy); padding: 8px 14px;
+  }
+  .skip:focus { top: 12px; }
+
+  .header {
+    position: fixed; inset: 0 0 auto 0; z-index: 60;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    padding: 28px var(--gutter);
+    color: var(--c-white);
+    transition: background 0.35s, padding 0.35s;
+  }
+  .header.is-scrolled {
+    background: color-mix(in srgb, var(--c-ink) 78%, transparent);
+    backdrop-filter: blur(14px);
+    padding-block: 18px;
+  }
+  .header.is-menu { background: transparent; backdrop-filter: none; }
+  .header-logo { font-size: clamp(20px, 2vw, 26px); }
+
+  /* Zwei Striche → X */
+  .menu-btn {
+    position: relative; width: 44px; height: 44px; margin-right: -8px;
+    background: none; border: 0; color: inherit; cursor: pointer;
+  }
+  /* nur transform/opacity animieren → flüssig, kein Ruckeln */
+  .menu-btn i {
+    position: absolute; left: 8px; right: 8px; top: 21px; height: 2px; background: currentColor;
+    transition: transform 0.3s var(--ease), opacity 0.2s;
+  }
+  .menu-btn i:first-child { transform: translateY(-4px); }
+  .menu-btn i:last-child { transform: translateY(4px); }
+  .menu-btn:hover i { opacity: 0.7; }
+  .menu-btn[aria-expanded='true'] i:first-child { transform: rotate(45deg); }
+  .menu-btn[aria-expanded='true'] i:last-child { transform: rotate(-45deg); }
+
+  .menu {
+    position: fixed; inset: 0; z-index: 50;
+    background: var(--c-black);
+    display: flex; flex-direction: column;
+    background-image: radial-gradient(60% 50% at 0% 100%, rgba(232, 67, 68, 0.18), transparent 70%);
+  }
+  .menu[hidden] { display: none; }
+  .menu-inner {
+    flex: 1; display: flex; justify-content: space-between; gap: 40px;
+    padding-top: 140px; padding-bottom: 48px;
+  }
+  /* Großbuchstaben + line-height 1 → keine Unterlängen, dadurch optisch exakt gleiche Abstände */
+  .menu-nav { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: clamp(14px, 2.4vh, 28px); }
+  .menu-nav a {
+    font-family: var(--font-display); text-transform: uppercase;
+    font-size: clamp(2.2rem, min(5.2vw, 8.5vh), 5.2rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.01em;
+    color: var(--c-white); transform-origin: right center;
+    transition: color 0.25s, scale 0.45s var(--ease);
+  }
+  .menu-nav a:hover, .menu-nav a:focus-visible { color: var(--c-red); scale: 1.06; }
+  .menu:not([hidden]) .menu-nav a { animation: menu-in 0.8s var(--ease) both; }
+  .menu-nav a:nth-child(2) { animation-delay: 0.05s !important; }
+  .menu-nav a:nth-child(3) { animation-delay: 0.1s !important; }
+  .menu-nav a:nth-child(4) { animation-delay: 0.15s !important; }
+  .menu-nav a:nth-child(5) { animation-delay: 0.2s !important; }
+  @keyframes menu-in { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+  .menu-foot {
+    display: flex; justify-content: flex-end; gap: 32px; padding-bottom: 36px;
+    font-size: 0.875rem; color: var(--c-muted);
+  }
+  .menu-foot a:hover { color: var(--c-red); }
+</style>
+
+<script>
+  import { cover, uncover, initLinks, initPageEnter } from '../scripts/pixel';
+
+  const header = document.querySelector<HTMLElement>('.header')!;
+  const btn = document.querySelector<HTMLButtonElement>('.menu-btn')!;
+  const menu = document.getElementById('menu')!;
+  let busy = false;
+
+  function apply(open: boolean) {
+    menu.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen');
+    header.classList.toggle('is-menu', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  async function setOpen(open: boolean) {
+    if (busy || open === !menu.hidden) return;
+    busy = true;
+    await cover();
+    apply(open);
+    await uncover();
+    busy = false;
+  }
+
+  btn.addEventListener('click', () => setOpen(menu.hidden));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+
+  // Links (auch im Menü) laufen über den Pixel-Übergang; Menü schließt sich dabei verdeckt.
+  initLinks(() => apply(false));
+  initPageEnter();
+
+  // Header-Hintergrund, sobald der Hero verlassen wird
+  const hero = document.querySelector('.hero');
+  const onScroll = () => {
+    const limit = hero ? hero.getBoundingClientRect().bottom - 60 : 40;
+    header.classList.toggle('is-scrolled', hero ? limit < 0 : scrollY > 40);
+  };
+  onScroll();
+  addEventListener('scroll', onScroll, { passive: true });
+</script>

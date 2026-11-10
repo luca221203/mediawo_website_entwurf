@@ -1,0 +1,26 @@
+---
+// Seitenkopf für Unterseiten: Eyebrow, große Headline, optional Intro + Zurück-Link
+interface Props { eyebrow?: string; title: string; intro?: string; back?: { href: string; label: string } }
+const { eyebrow, title, intro, back } = Astro.props;
+---
+
+<header class="page-head container">
+  <div class="page-glow" aria-hidden="true"></div>
+  {back && <a href={back.href} class="page-back reveal"><span aria-hidden="true">←</span> {back.label}</a>}
+  {eyebrow && <p class="eyebrow reveal">{eyebrow}</p>}
+  <h1 class="page-title" data-split>{title}</h1>
+  {intro && <p class="page-intro reveal">{intro}</p>}
+  <slot />
+</header>
+
+<style>
+  .page-head { position: relative; display: grid; gap: 28px; padding-top: clamp(150px, 18vw, 240px); padding-bottom: clamp(56px, 7vw, 112px); }
+  .page-glow {
+    position: absolute; z-index: -1; right: -10%; top: -20%; width: 70vw; height: 70vw; max-width: 1100px; max-height: 1100px;
+    background: var(--glow); opacity: 0.45; filter: blur(40px); pointer-events: none;
+  }
+  .page-back { width: fit-content; display: inline-flex; gap: 8px; font-size: 0.875rem; color: var(--c-muted); transition: color 0.2s, gap 0.3s var(--ease); }
+  .page-back:hover { color: var(--c-red); gap: 12px; }
+  .page-title { font-size: clamp(2.4rem, 7vw, 7rem); font-weight: 800; line-height: 1; max-width: 16ch; }
+  .page-intro { max-width: 52ch; font-size: clamp(1.05rem, 1.4vw, 1.25rem); font-weight: 300; line-height: 1.7; color: rgba(255, 255, 255, 0.82); }
+</style>

@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Services from '../components/Services.astro';
+import Projects from '../components/Projects.astro';
+import About from '../components/About.astro';
+import Founders from '../components/Founders.astro';
+import Faq from '../components/Faq.astro';
+import { faq, site } from '../data/site';
+
+// Strukturierte Daten für Suchmaschinen und KI-Suchen
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: site.name,
+    description: 'Medienagentur aus Trier für Videoproduktion, Social Media, Recruiting, Branding, Webdesign sowie KI-Automatisierung und individuelle Software.',
+    knowsAbout: ['Videoproduktion', 'Imagefilm', 'Social-Media-Marketing', 'Employer Branding', 'Corporate Design', 'Webdesign', 'KI-Automatisierung', 'Prozessautomatisierung', 'Individuelle Software'],
+    address: { '@type': 'PostalAddress', streetAddress: site.address[0], postalCode: '54292', addressLocality: 'Trier', addressCountry: 'DE' },
+    areaServed: ['Trier', 'Rheinland-Pfalz', 'Luxemburg'],
+    email: site.email,
+  },
+];
+---
+
+<Base>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <Hero />
+  <Services />
+  <Projects />
+  <About />
+  <Founders />
+  <Faq />
+</Base>

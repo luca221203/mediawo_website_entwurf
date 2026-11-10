@@ -1,0 +1,148 @@
+---
+// "Über uns" – ausführliche Seite zu Mediawo und den Gründern. Team-Daten: src/data/site.ts (team)
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { team } from '../data/site';
+import { placeholderBg } from '../data/placeholders';
+
+const values = [
+  { title: 'Persönlich', text: 'Bei uns sprechen Sie direkt mit den Menschen, die Ihr Projekt umsetzen. Kurze Wege, feste Ansprechpartner und ein offenes Ohr gehören für uns dazu.' },
+  { title: 'Ehrlich & verlässlich', text: 'Wir sagen offen, was wir für sinnvoll halten – auch wenn es einmal nicht das Naheliegende ist. Und was wir zusagen, halten wir ein.' },
+  { title: 'Wachstum im Blick', text: 'Schöne Inhalte allein reichen nicht. Wir denken jedes Projekt von Ihrem Ziel her: mehr Sichtbarkeit, neue Kunden und die richtigen Mitarbeitenden.' },
+];
+---
+
+<Base title="Über uns – Mediawo" description="Mediawo ist eine Medienagentur aus Trier, gegründet von Kai Olbrich und Luca Wunderlich.">
+  <PageHeader
+    eyebrow="Über uns"
+    title="Wir sind Mediawo."
+    intro="Wir sind Kai und Luca – zwei Freunde aus Trier, die gemeinsam Unternehmen dabei helfen, sichtbar zu werden und zu wachsen."
+  />
+
+  <!-- Teamfoto -->
+  <section class="container">
+    <div class="team-photo reveal">
+      <div class="ph" style={`background:${placeholderBg(1)}`}><span>Teamfoto folgt</span></div>
+      <div class="grain" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- Geschichte -->
+  <section class="container story">
+    <p class="eyebrow reveal">Unsere Geschichte</p>
+    <p class="story-lead" data-fill>
+      Angefangen hat alles in der fünften Klasse. Aus der Schulfreundschaft wurde eine Partnerschaft – und daraus Mediawo.
+    </p>
+    <div class="story-cols">
+      <p class="reveal">
+        Nach der Schule gingen wir zunächst getrennte Wege: Luca studierte Betriebswirtschaftslehre, Kai Mediendesign.
+        Schnell merkten wir, wie gut sich beides ergänzt – wirtschaftliches Denken auf der einen Seite, Gestaltung und
+        Content auf der anderen. Unser erstes gemeinsames Projekt war der Social-Media-Auftritt des Studierendenwerks.
+      </p>
+      <p class="reveal" style="transition-delay:120ms">
+        Aus dieser Arbeit entstand die Idee, uns selbstständig zu machen. Heute begleiten wir Unternehmen mit Video,
+        Social Media, Branding, Webdesign und KI-Automatisierung – mit dem Ziel, dass sie wachsen und sowohl neue Kunden als auch neue
+        Mitarbeitende erreichen. Dabei sind wir geblieben, wer wir sind: nahbar, ehrlich und mit vollem Einsatz.
+      </p>
+    </div>
+  </section>
+
+  <!-- Gründer im Detail -->
+  <section class="founders-detail">
+    <div class="container">
+      <p class="eyebrow reveal">Die Gründer</p>
+      {team.map((m, i) => (
+        <article class={`member ${i % 2 ? 'flip' : ''}`}>
+          <div class="member-media reveal">
+            {m.image
+              ? <img src={m.image} alt={m.name} loading="lazy" />
+              : <div class="member-ph" aria-hidden="true"><span>{m.initials}</span><small>Foto folgt</small></div>}
+          </div>
+          <div class="member-text">
+            <p class="member-role reveal">{m.role}</p>
+            <h2 class="member-name" data-split>{m.name}</h2>
+            <p class="member-bio reveal">{m.bio}</p>
+            <dl class="member-facts">
+              {m.facts.map((f, k) => (
+                <div class="reveal" style={`transition-delay:${k * 80}ms`}>
+                  <dt>{f.label}</dt>
+                  <dd>{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- Werte -->
+  <section class="container values">
+    <header class="values-head">
+      <p class="eyebrow reveal">Wofür wir stehen</p>
+      <h2 class="values-title" data-split>Unsere Werte</h2>
+    </header>
+    <ol class="values-list">
+      {values.map((v, i) => (
+        <li class="reveal" style={`transition-delay:${i * 100}ms`}>
+          <span class="value-num">0{i + 1}</span>
+          <h3>{v.title}</h3>
+          <p>{v.text}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+</Base>
+
+<style>
+  .team-photo { position: relative; aspect-ratio: 16 / 8; border-radius: 6px; overflow: hidden; background: #0f0f15; }
+  .team-photo .grain { opacity: 0.12; }
+  .ph { position: absolute; inset: 0; display: grid; place-items: center; }
+  .ph span { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+
+  .story { display: grid; gap: 32px; padding-block: var(--section-space); }
+  .story-lead { font-weight: 300; font-size: clamp(1.5rem, 3vw, 2.8rem); line-height: 1.35; max-width: 30ch; }
+  .story-cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 112px); margin-top: clamp(24px, 4vw, 56px); }
+  .story-cols p { font-weight: 300; line-height: 1.8; color: rgba(255, 255, 255, 0.78); }
+
+  /* Gründer: rote Fläche wie auf der Startseite */
+  .founders-detail { background: var(--c-red); padding-block: var(--section-space); }
+  .founders-detail .eyebrow { color: rgba(255, 255, 255, 0.75); margin-bottom: clamp(40px, 5vw, 80px); }
+  .member {
+    display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(32px, 6vw, 112px); align-items: center;
+  }
+  .member + .member { margin-top: clamp(80px, 10vw, 160px); }
+  .member.flip .member-media { order: 2; }
+  .member-media { position: relative; aspect-ratio: 4 / 5; border-radius: 6px; overflow: hidden; background: var(--c-darkred); }
+  .member-media img, .member-ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease); }
+  .member:hover .member-media img, .member:hover .member-ph { transform: scale(1.04); }
+  .member-ph {
+    display: grid; place-content: center; justify-items: center; gap: 6px;
+    background: radial-gradient(80% 60% at 30% 20%, rgba(255, 255, 255, 0.14), transparent 70%), var(--c-darkred);
+  }
+  .member-ph span { font-weight: 300; font-size: clamp(3rem, 6vw, 5.5rem); opacity: 0.55; }
+  .member-ph small { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6; }
+  .member-text { display: grid; gap: 22px; }
+  .member-role { font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255, 255, 255, 0.75); }
+  .member-name { font-size: clamp(2rem, 4.4vw, 4.2rem); font-weight: 800; }
+  .member-bio { font-weight: 300; line-height: 1.8; max-width: 48ch; color: rgba(255, 255, 255, 0.9); }
+  .member-facts { margin: 12px 0 0; display: grid; border-top: 1px solid rgba(255, 255, 255, 0.3); }
+  .member-facts div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 16px; padding-block: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); }
+  .member-facts dt { font-size: 0.875rem; color: rgba(255, 255, 255, 0.75); }
+  .member-facts dd { margin: 0; font-weight: 500; }
+
+  .values { padding-block: var(--section-space); }
+  .values-head { display: grid; gap: 24px; margin-bottom: clamp(48px, 6vw, 96px); }
+  .values-title { font-size: clamp(1.8rem, 3.6vw, 3.5rem); }
+  .values-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 2.5vw, 40px); }
+  .values-list li { display: grid; gap: 14px; align-content: start; padding-top: 28px; border-top: 1px solid var(--c-line); }
+  .value-num { font-size: 0.875rem; color: var(--c-red); }
+  .values-list h3 { font-size: clamp(1.1rem, 1.5vw, 1.35rem); font-weight: 600; text-transform: uppercase; }
+  .values-list p { font-weight: 300; line-height: 1.75; color: rgba(255, 255, 255, 0.78); }
+
+  @media (max-width: 860px) {
+    .story-cols, .member, .values-list { grid-template-columns: 1fr; }
+    .member.flip .member-media { order: 0; }
+    .team-photo { aspect-ratio: 4 / 3; }
+  }
+</style>

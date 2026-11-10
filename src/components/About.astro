@@ -1,0 +1,26 @@
+---
+// Über uns – die Zahlen sind raus. Ersatz-Ideen siehe Chat (Team, Arbeitsweise, Kundenlogos, Stimmen …)
+---
+
+<section class="about container" id="about">
+  <p class="eyebrow reveal">(03) Über uns</p>
+  <!-- Text ist ausgegraut und füllt sich beim Scrollen Wort für Wort -->
+  <p class="about-text" data-fill>
+    Wir sind ein kleines Team aus <em>Trier</em> mit hohem Anspruch an Konzeption, Gestaltung und Umsetzung.
+    Wir entwickeln Inhalte, die Ihre Marke nicht nur sichtbar machen, sondern in <em>Erinnerung</em> bleiben.
+  </p>
+</section>
+
+<style>
+  .about { position: relative; padding-block: var(--section-space); display: grid; gap: 40px; }
+  .about::before {
+    content: ''; position: absolute; right: -20%; top: 10%; width: 70vw; height: 70vw; max-width: 1000px; max-height: 1000px;
+    background: var(--glow); opacity: 0.35; pointer-events: none; z-index: -1; filter: blur(40px);
+  }
+  .about-text {
+    font-family: var(--font-body); font-weight: 300;
+    font-size: clamp(1.6rem, 3.2vw, 3.1rem); line-height: 1.35; letter-spacing: -0.01em; max-width: 26ch;
+  }
+  .about-text em { font-style: normal; color: var(--c-red); }
+  .ph { font-size: 0.8125rem; color: var(--c-muted); }
+</style>

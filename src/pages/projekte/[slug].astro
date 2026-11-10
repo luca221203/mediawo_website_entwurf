@@ -1,0 +1,254 @@
+---
+// Vorlage für jede Projekt-Unterseite. Inhalte kommen aus src/data/site.ts (projects).
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { projects, type Project } from '../../data/site';
+import { placeholderBg } from '../../data/placeholders';
+
+export function getStaticPaths() {
+  return projects.map((project, index) => ({ params: { slug: project.slug }, props: { project, index } }));
+}
+
+interface Props { project: Project; index: number }
+const { project: p, index } = Astro.props;
+const next = projects[(index + 1) % projects.length];
+const nextIndex = (index + 1) % projects.length;
+
+// Leere Angaben (z. B. noch fehlendes Jahr) werden ausgeblendet
+const meta = [
+  { label: 'Kunde', value: p.client },
+  { label: 'Leistungen', value: p.services.join(', ') },
+  { label: 'Umfang', value: p.scope ?? '' },
+  { label: 'Jahr', value: p.year },
+].filter((m) => m.value);
+const cover = p.cover || p.image;
+---
+
+<Base title={`${p.title} – Projekte – Mediawo`} description={p.intro.slice(0, 155)}>
+  <PageHeader eyebrow={`${p.client} · ${p.category}`} title={p.title} back={{ href: '/projekte', label: 'Alle Projekte' }} />
+
+  <!-- Projekt-Eckdaten -->
+  <section class="container">
+    <dl class="meta">
+      {meta.map((m, i) => (
+        <div class="reveal" style={`transition-delay:${i * 70}ms`}>
+          <dt>{m.label}</dt>
+          <dd>{m.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <!-- Titelbild / Video -->
+  <section class="container">
+    <div class="cover reveal">
+      {p.videoEmbed
+        ? <iframe src={p.videoEmbed} title={`${p.client} – ${p.title}`} allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        : p.video
+        ? <video src={p.video} poster={cover || undefined} controls playsinline preload="metadata"></video>
+        : cover
+          ? <img src={cover} alt={`${p.client} – ${p.title}`} />
+          : <div class="ph" style={`background:${placeholderBg(index)}`}><span>Imagefilm / Titelbild folgt</span></div>}
+      <div class="grain" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- Einleitung -->
+  <section class="container block">
+    <p class="eyebrow reveal">Über das Projekt</p>
+    <p class="intro" data-fill>{p.intro}</p>
+  </section>
+
+  <!-- Auf einen Blick -->
+  {p.highlights && p.highlights.length > 0 && (
+    <section class="container highlights">
+      <p class="eyebrow reveal">Auf einen Blick</p>
+      <ul>
+        {p.highlights.map((h, i) => <li class="reveal" style={`transition-delay:${i * 80}ms`}>{h}</li>)}
+      </ul>
+    </section>
+  )}
+
+  <!-- Herausforderung & Lösung -->
+  <section class="container block two-col">
+    <div class="reveal">
+      <h2 class="col-title">Die Herausforderung</h2>
+      <p>{p.challenge}</p>
+    </div>
+    <div class="reveal" style="transition-delay:120ms">
+      <h2 class="col-title">Unsere Lösung</h2>
+      <p>{p.solution}</p>
+    </div>
+  </section>
+
+  <!-- Galerie: 1 breit, 2 nebeneinander, 1 breit -->
+  {p.gallery.length > 0 && (
+  <section class="container">
+    <ul class="gallery">
+      {p.gallery.map((src, i) => (
+        <li class={`reveal ${i % 3 === 0 ? 'wide' : ''}`}>
+          {src
+            ? <img src={src} alt={`${p.title} – Bild ${i + 1}`} loading="lazy" />
+            : <div class="ph" style={`background:${placeholderBg(index + i + 1)}`}><span>Bild {i + 1}</span></div>}
+          <div class="grain" aria-hidden="true"></div>
+        </li>
+      ))}
+    </ul>
+  </section>
+  )}
+
+  <!-- Reels: Hochformat-Videos nebeneinander + Instagram-Button -->
+  {p.reels && p.reels.length > 0 && (
+    <section class="container reels">
+      <ul class="reel-list" style={`--n:${p.reels.length}`}>
+        {p.reels.map((r, i) => (
+          <li class="reel reveal" style={`transition-delay:${i * 100}ms`}>
+            {r.src
+              ? <video src={r.src} poster={r.poster} controls playsinline preload="metadata" aria-label={r.title ?? `${p.client} – Reel ${i + 1}`}></video>
+              : <div class="ph" style={`background:${placeholderBg(index + i + 1)}`}><span>Reel {i + 1} folgt</span></div>}
+          </li>
+        ))}
+      </ul>
+      {p.instagramUrl && (
+        <div class="showcase-cta reveal">
+          <a class="site-btn" href={p.instagramUrl} target="_blank" rel="noopener">Zum Instagram-Account <span aria-hidden="true">↗</span></a>
+        </div>
+      )}
+    </section>
+  )}
+
+  <!-- Abschlussbild (z. B. Website) + Button -->
+  {(p.showcase || p.websiteUrl !== undefined) && (
+    <section class="container showcase">
+      {p.showcase && (
+        <div class="showcase-media reveal">
+          <img src={p.showcase} alt={`${p.client} – Website`} loading="lazy" />
+        </div>
+      )}
+      {p.websiteUrl !== undefined && (
+        <div class="showcase-cta reveal">
+          {p.websiteUrl
+            ? <a class="site-btn" href={p.websiteUrl} target="_blank" rel="noopener">Website ansehen <span aria-hidden="true">↗</span></a>
+            : <span class="site-btn is-pending" aria-disabled="true">Website ansehen <span class="soon">bald online</span></span>}
+        </div>
+      )}
+    </section>
+  )}
+
+  <!-- Ergebnis -->
+  <section class="container block result">
+    <h2 class="col-title reveal">Das Ergebnis</h2>
+    <p class="reveal">{p.result}</p>
+  </section>
+
+  <!-- Nächstes Projekt -->
+  <!-- Bild des nächsten Projekts als Hintergrund, Logo + Kunde als Kontext -->
+  <a href={`/projekte/${next.slug}`} class="next">
+    {next.image
+      ? <img class="next-bg next-photo" src={next.image} alt="" loading="lazy" />
+      : <div class="next-bg" style={`background:${placeholderBg(nextIndex)}`} aria-hidden="true"></div>}
+    <div class="next-shade" aria-hidden="true"></div>
+    <div class="container next-inner">
+      <span class="eyebrow">Nächstes Projekt</span>
+      {next.logo && <img class="next-logo" src={next.logo} alt={next.client} />}
+      <span class="next-title">{next.title} <span class="next-arrow" aria-hidden="true">→</span></span>
+      <span class="next-meta">{next.client} · {next.category}</span>
+    </div>
+  </a>
+</Base>
+
+<style>
+  .meta {
+    margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 24px;
+    padding-block: 28px; border-block: 1px solid var(--c-line);
+  }
+  .meta dt { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 8px; }
+  .meta dd { margin: 0; font-weight: 400; }
+
+  .cover, .gallery li { position: relative; overflow: hidden; border-radius: 6px; background: #0f0f15; }
+  .cover { aspect-ratio: 16 / 9; margin-top: clamp(40px, 5vw, 72px); }
+  .cover iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .cover img, .cover video, .gallery img, .ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ph { display: grid; place-items: center; }
+  .ph span { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+  .cover .grain, .gallery .grain { opacity: 0.12; }
+
+  .block { padding-block: clamp(80px, 10vw, 160px); display: grid; gap: 28px; }
+  .intro { font-weight: 300; font-size: clamp(1.4rem, 2.6vw, 2.4rem); line-height: 1.4; max-width: 34ch; }
+
+  .highlights { display: grid; gap: 24px; padding-bottom: clamp(80px, 10vw, 160px); }
+  .highlights ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--c-line); }
+  .highlights li {
+    padding: 24px 20px 24px 0; border-bottom: 1px solid var(--c-line);
+    font-weight: 600; text-transform: uppercase; font-size: clamp(0.95rem, 1.3vw, 1.15rem); line-height: 1.35;
+  }
+  .highlights li::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--c-red); margin-bottom: 16px; }
+  @media (max-width: 900px) { .highlights ul { grid-template-columns: 1fr 1fr; } }
+
+  .two-col { grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 112px); padding-top: 0; }
+  .col-title { font-size: clamp(1.2rem, 1.8vw, 1.6rem); margin-bottom: 18px; color: var(--c-red); }
+  .two-col p, .result p { font-weight: 300; line-height: 1.8; color: rgba(255, 255, 255, 0.82); max-width: 56ch; }
+
+  .gallery { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2vw, 32px); }
+  .gallery li { aspect-ratio: 4 / 3; }
+  .gallery li.wide { grid-column: 1 / -1; aspect-ratio: 16 / 8; }
+
+  .result { padding-bottom: var(--section-space); }
+
+  .reels { display: grid; gap: clamp(32px, 4vw, 56px); }
+  .reel-list { list-style: none; margin: 0 auto; padding: 0; width: 100%; max-width: calc(var(--n, 3) * 347px); display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: clamp(16px, 2vw, 32px); }
+  .reel { position: relative; aspect-ratio: 9 / 16; border-radius: 10px; overflow: hidden; background: #0f0f15; }
+  .reel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; }
+  @media (max-width: 760px) {
+    .reel-list { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 72%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+    .reel { scroll-snap-align: start; }
+  }
+
+  .showcase { display: grid; gap: clamp(24px, 3vw, 40px); margin-top: clamp(16px, 2vw, 32px); }
+  .showcase-media { border-radius: 6px; overflow: hidden; aspect-ratio: 16 / 10; background: #0f0f15; }
+  .showcase-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .showcase-cta { display: flex; justify-content: center; }
+  .site-btn {
+    position: relative; overflow: hidden; isolation: isolate; display: inline-flex; align-items: center; gap: 12px;
+    padding: 18px 34px; border-radius: 99px; background: var(--c-white); color: var(--c-ink);
+    font-size: 0.9375rem; font-weight: 600; transition: color 0.3s;
+  }
+  .site-btn::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--c-red); transform: translateY(101%); transition: transform 0.4s var(--ease); }
+  a.site-btn:hover { color: var(--c-white); }
+  a.site-btn:hover::before { transform: none; }
+  .site-btn.is-pending { cursor: default; opacity: 0.85; }
+  .site-btn .soon { font-size: 0.75rem; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-muted); }
+
+  .next { position: relative; display: block; overflow: hidden; isolation: isolate; border-top: 1px solid var(--c-line); }
+  .next-bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; opacity: 0.35; transition: opacity 0.6s var(--ease), transform 1.2s var(--ease); }
+  .next:hover .next-bg { opacity: 0.8; transform: scale(1.05); }
+  /* Foto des nächsten Projekts: abgedunkelt wie die Kacheln, beim Hover etwas heller */
+  .next-photo { object-fit: cover; opacity: 1; filter: brightness(0.32) saturate(0.85); transition: filter 0.6s var(--ease), transform 1.2s var(--ease); }
+  .next:hover .next-photo { opacity: 1; filter: brightness(0.42) saturate(0.9); }
+  .next-shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(to right, rgba(11, 11, 16, 0.75), transparent 70%); pointer-events: none; }
+  .next-logo { width: auto; height: clamp(40px, 4.5vw, 64px); max-width: 60%; object-fit: contain; object-position: left; filter: brightness(0) invert(1); }
+  .next-meta { color: rgba(255, 255, 255, 0.75); font-size: 0.9375rem; font-weight: 300; }
+  .next-inner { display: grid; gap: 20px; padding-block: clamp(96px, 12vw, 200px); }
+  .next-title {
+    font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1;
+    font-size: clamp(2.2rem, 6.5vw, 6.5rem);
+  }
+  .next-arrow { display: inline-block; color: var(--c-red); transition: transform 0.6s var(--ease); }
+  .next:hover .next-arrow { transform: translateX(0.2em); }
+
+  @media (max-width: 760px) {
+    .meta { grid-template-columns: 1fr 1fr; }
+    .highlights { display: grid; gap: 24px; padding-bottom: clamp(80px, 10vw, 160px); }
+  .highlights ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--c-line); }
+  .highlights li {
+    padding: 24px 20px 24px 0; border-bottom: 1px solid var(--c-line);
+    font-weight: 600; text-transform: uppercase; font-size: clamp(0.95rem, 1.3vw, 1.15rem); line-height: 1.35;
+  }
+  .highlights li::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--c-red); margin-bottom: 16px; }
+  @media (max-width: 900px) { .highlights ul { grid-template-columns: 1fr 1fr; } }
+
+  .two-col { grid-template-columns: 1fr; }
+    .gallery { grid-template-columns: 1fr; }
+    .gallery li.wide { aspect-ratio: 4 / 3; }
+  }
+</style>

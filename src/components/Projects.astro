@@ -1,0 +1,26 @@
+---
+import { projects } from '../data/site';
+import ProjectCard from './ProjectCard.astro';
+---
+
+<section class="projects container" id="projekte">
+  <header class="projects-head">
+    <p class="eyebrow reveal">(02) Ausgewählte Projekte</p>
+    <h2 class="projects-title" data-split>Referenzen</h2>
+  </header>
+
+  <ul class="project-grid">
+    {projects.slice(0, 4).map((p, i) => <ProjectCard project={p} index={i} />)}
+  </ul>
+
+  <div class="projects-more reveal">
+    <a href="/projekte" class="pill">Alle Projekte ansehen <span aria-hidden="true">→</span></a>
+  </div>
+</section>
+
+<style>
+  .projects { padding-block: var(--section-space); }
+  .projects-head { display: grid; gap: 24px; margin-bottom: clamp(48px, 6vw, 96px); }
+  .projects-title { font-size: clamp(1.8rem, 3.6vw, 3.5rem); }
+  .projects-more { display: flex; justify-content: center; margin-top: clamp(80px, 9vw, 140px); }
+</style>

@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Impressum – Mediawo">
+  <section class="container legal">
+    <h1>Impressum</h1>
+    <p>PLATZHALTER – der rechtssichere Text folgt. (Pflichtseite in Deutschland.)</p>
+    <p class="credit">Kartengrundlage Rheinland-Pfalz: <a href="https://github.com/VictorCazanave/svg-maps">svg-maps</a> von Victor Cazanave, Lizenz <a href="https://creativecommons.org/licenses/by/4.0/deed.de">CC BY 4.0</a>, Ausschnitt verändert.</p>
+  </section>
+</Base>
+
+<style>
+  .legal { padding-block: 160px 120px; min-height: 70vh; }
+  .legal .credit { margin-top: 24px; font-size: 0.8125rem; color: var(--c-muted); }
+  .legal .credit a { text-decoration: underline; text-underline-offset: 3px; }
+  .legal h1 { font-size: clamp(2.4rem, 6vw, 5rem); margin-bottom: 32px; }
+</style>

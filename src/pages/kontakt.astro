@@ -1,0 +1,63 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ContactForm from '../components/ContactForm.astro';
+import RlpMap from '../components/RlpMap.astro';
+import { site } from '../data/site';
+---
+
+<Base title="Kontakt – Mediawo" description="Projekt anfragen bei Mediawo, Medienagentur aus Trier: Video, Social Media, Recruiting, Branding, Webdesign sowie KI & Automatisierung.">
+  <PageHeader
+    eyebrow="Kontakt"
+    title="Kontakt aufnehmen."
+    intro="Beschreiben Sie uns kurz Ihr Vorhaben. Wir melden uns innerhalb von zwei Werktagen mit einer ersten Einschätzung."
+  />
+
+  <section class="container contact">
+    <div class="contact-form reveal">
+      <ContactForm id="kontakt" />
+    </div>
+
+    <aside class="contact-side">
+      <RlpMap />
+      <dl class="contact-list">
+        <div class="reveal">
+          <dt>E-Mail</dt>
+          <dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
+        </div>
+        <div class="reveal" style="transition-delay:80ms">
+          <dt>Telefon</dt>
+          <dd><a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a></dd>
+        </div>
+        <div class="reveal" style="transition-delay:160ms">
+          <dt>Adresse</dt>
+          <dd>{site.address.map((l) => <span>{l}</span>)}</dd>
+        </div>
+        <div class="reveal" style="transition-delay:240ms">
+          <dt>Social</dt>
+          <dd class="socials">{site.socials.map((s) => <a href={s.href}>{s.name}</a>)}</dd>
+        </div>
+      </dl>
+    </aside>
+  </section>
+</Base>
+
+<style>
+  .contact {
+    display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(48px, 8vw, 140px); align-items: start;
+    padding-bottom: var(--section-space);
+  }
+  .contact-side { display: grid; gap: 48px; justify-items: start; position: sticky; top: 120px; }
+  .contact-list { margin: 0; width: 100%; display: grid; border-top: 1px solid var(--c-line); }
+  .contact-list div { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: 16px; padding-block: 16px; border-bottom: 1px solid var(--c-line); }
+  .contact-list dt { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-muted); padding-top: 3px; }
+  .contact-list dd { margin: 0; display: grid; gap: 4px; font-weight: 300; }
+  .contact-list a { transition: color 0.2s; }
+  .contact-list a:hover { color: var(--c-red); }
+  .socials { display: flex !important; flex-wrap: wrap; gap: 6px 16px !important; }
+
+  @media (max-width: 900px) {
+    .contact { grid-template-columns: 1fr; }
+    .contact-side { position: static; }
+  }
+</style>
