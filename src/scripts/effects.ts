@@ -109,7 +109,6 @@ if (footerEl && lastSection) {
     const p = Math.min(1, Math.max(0, 1 - footerEl.getBoundingClientRect().top / innerHeight)); // 0 → 1 während der Footer hereinfährt
     if (!reduced) {
       lastSection.style.transform = p ? `scale(${1 - p * 0.05})` : '';
-      lastSection.style.filter = p ? `brightness(${1 - p * 0.55})` : '';
     }
   };
   setTop();
