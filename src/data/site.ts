@@ -232,26 +232,26 @@ export const projects: Project[] = [
 export const team = [
   {
     name: 'Kai Olbrich',
-    role: 'Creative Director',
+    role: 'Kreativkopf',
     initials: 'KO',
     image: '',
     bio: 'Kai hat Mediendesign studiert und ist bei Mediawo für alles Kreative zuständig – von der Idee über Dreh und Schnitt bis zum fertigen Design. Sein Anspruch: Inhalte, die nicht nur gut aussehen, sondern zur Marke passen und bei der richtigen Zielgruppe ankommen.',
     facts: [
       { label: 'Studium', value: 'Mediendesign' },
       { label: 'Schwerpunkt', value: 'Konzeption, Video & Design' },
-      { label: 'Bei Mediawo', value: 'Creative Director & Mitgründer' },
+      { label: 'Bei Mediawo', value: 'Kreativkopf & Mitgründer' },
     ],
   },
   {
     name: 'Luca Wunderlich',
-    role: 'Managing Director',
+    role: 'Stratege',
     initials: 'LW',
     image: '',
     bio: 'Luca hat Betriebswirtschaftslehre studiert und behält bei Mediawo Strategie, Planung und Zahlen im Blick. Er sorgt dafür, dass jedes Projekt ein klares Ziel verfolgt und reibungslos läuft – und ist für unsere Kunden der direkte Draht.',
     facts: [
       { label: 'Studium', value: 'Betriebswirtschaftslehre' },
       { label: 'Schwerpunkt', value: 'Strategie & Kundenbetreuung' },
-      { label: 'Bei Mediawo', value: 'Managing Director & Mitgründer' },
+      { label: 'Bei Mediawo', value: 'Stratege & Mitgründer' },
     ],
   },
 ];
